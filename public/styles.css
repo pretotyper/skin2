@@ -1,0 +1,249 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    padding: 0;
+    box-sizing: border-box;
+}
+.gnb {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    margin-bottom: 50px;
+}
+.logo h2 {
+    font-size: 1.2em;
+    margin: 0;
+}
+.gnb-right {
+    display: flex;
+    align-items: center;
+}
+.share-btn {
+    background: none;
+    border: none;
+    font-size: 1em;
+    color: #333;
+    cursor: pointer;
+    margin-right: 20px;
+}
+.signup-btn {
+    background-color: black;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1em;
+    cursor: pointer;
+}
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    margin-top: 20px;
+}
+h1, h2 {
+    font-weight: bold;
+    text-align: left;
+    width: 100%;
+}
+h1 {
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+h2 {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+.description {
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 20px;
+    text-align: left;
+    width: 100%;
+}
+.image-input {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 20px;
+}
+.image-block {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+    text-align: center;
+    background-color: #f9f9f9;
+    width: 30%;
+}
+.image-preview {
+    display: none;
+    max-width: 100%;
+    height: auto;
+    margin-top: 10px;
+    max-height: 150px; /* 이미지 최대 높이 설정 */
+}
+.image-input label {
+    margin-bottom: 10px;
+    text-align: left;
+    width: 100%;
+}
+.image-input input {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+.budget-input {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-bottom: 20px;
+}
+.budget-input label {
+    margin-bottom: 10px;
+    text-align: left;
+    width: 100%;
+}
+.budget-input input {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+.analyze-button {
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 40px;
+    display: flex;
+    justify-content: center;
+    position: relative;
+}
+.analyze-button button {
+    width: 100%;
+    padding: 15px;
+    font-size: 16px;
+    background-color: black;
+    color: white;
+    border: none;
+    cursor: pointer;
+    position: relative;
+}
+.analyze-button button:disabled {
+    background-color: lightgray;
+    color: white;
+    cursor: not-allowed;
+}
+.analyze-button button:disabled:hover::after {
+    content: '먼저 이미지 업로드 및 예산을 입력해주세요';
+    position: absolute;
+    background-color: #333;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    top: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-size: 12px;
+    z-index: 10;
+    display: block;
+}
+.analyze-button button:not(:disabled)::after {
+    display: none;
+}
+.result, .recommended-products, .recommended-treatments {
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    box-sizing: border-box;
+}
+.result-title, .recommended-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+    text-align: left;
+}
+.result #predicted-age, .recommended-products #recommended-products, .recommended-treatments #recommended-treatments {
+    color: #aaa;
+}
+.actions {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 600px;
+}
+.actions button {
+    width: 48%;
+    padding: 15px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: lightgray;
+    border: none;
+}
+.actions button:disabled {
+    background-color: lightgray;
+    color: white;
+    cursor: not-allowed;
+}
+.actions button.active {
+    background-color: black;
+    color: white;
+}
+footer {
+    text-align: center;
+    margin-top: 40px;
+}
+footer .catch-phrase {
+    font-size: 0.9em;
+    color: #666;
+}
+
+.toast {
+    visibility: hidden;
+    min-width: 250px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 25px; /* 부드러운 타원형 느낌의 radius 조정 */
+    padding: 16px;
+    position: fixed;
+    z-index: 1;
+    left: 50%;
+    bottom: 30px;
+    font-size: 17px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    transform: translateX(-50%);
+}
+.toast.show {
+    visibility: visible;
+    -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@-webkit-keyframes fadein {
+    from {bottom: 0; opacity: 0;}
+    to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadein {
+    from {bottom: 0; opacity: 0;}
+    to {bottom: 30px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+    from {bottom: 30px; opacity: 1;}
+    to {bottom: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+    from {bottom: 30px; opacity: 1;}
+    to {bottom: 0; opacity: 0;}
+}
+
+.red-asterisk {
+    color: red;
+}
