@@ -9,6 +9,7 @@ document.getElementById('analyze').addEventListener('click', function() {
     if (this.disabled) {
         showToast('먼저 이미지 업로드 및 예산을 입력해주세요');
     } else {
+        resetButtons(); // 분석하기 버튼을 클릭했을 때 버튼 상태 초기화
         handleAnalyze();
     }
 });
@@ -166,8 +167,6 @@ async function handleAnalyze() {
             })
         });
 
-        spinner.style.display = 'none';
-
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -175,13 +174,15 @@ async function handleAnalyze() {
         const result = await response.json();
         console.log(result);  // API 응답을 콘솔에 출력
 
-        const diagnosisResultMatch = result.match(/진단 결과:([\s\S]*?)(?=제품 및 루틴 추천:|피부 시술 추천:|$)/);
-        const productRoutineRecommendationMatch = result.match(/제품 및 루틴 추천:([\s\S]*?)(?=피부 시술 추천:|$)/);
-        const treatmentRecommendationMatch = result.match(/피부 시술 추천:([\s\S]*?$)/);
+        spinner.style.display = 'none';
 
-        const diagnosisResult = diagnosisResultMatch ? diagnosisResultMatch[1].trim() : "분석 결과를 불러오지 못했습니다. 다시 시도해주세요.";
-        const productRoutineRecommendation = productRoutineRecommendationMatch ? productRoutineRecommendationMatch[1].trim() : "분석 결과를 불러오지 못했습니다. 다시 시도해주세요.";
-        const treatmentRecommendation = treatmentRecommendationMatch ? treatmentRecommendationMatch[1].trim() : "분석 결과를 불러오지 못했습니다. 다시 시도해주세요.";
+        const diagnosisResultMatch = result.match(/진단 결과:[\s\S]*?(?=\n\n|제품 및 루틴 추천:|$)/);
+        const productRoutineRecommendationMatch = result.match(/제품 및 루틴 추천:[\s\S]*?(?=\n\n|피부 시술 추천:|$)/);
+        const treatmentRecommendationMatch = result.match(/피부 시술 추천:[\s\S]*$/);
+
+        const diagnosisResult = diagnosisResultMatch ? diagnosisResultMatch[0].replace('진단 결과:', '').trim() : "분석 결과를 불러오지 못했습니다. 다시 시도해주세요.";
+        const productRoutineRecommendation = productRoutineRecommendationMatch ? productRoutineRecommendationMatch[0].replace('제품 및 루틴 추천:', '').trim() : "분석 결과를 불러오지 못했습니다. 다시 시도해주세요.";
+        const treatmentRecommendation = treatmentRecommendationMatch ? treatmentRecommendationMatch[0].replace('피부 시술 추천:', '').trim() : "분석 결과를 불러오지 못했습니다. 다시 시도해주세요.";
 
         document.getElementById('predicted-age').innerText = diagnosisResult;
         document.getElementById('recommended-products').innerText = productRoutineRecommendation;
@@ -204,7 +205,6 @@ async function handleAnalyze() {
         document.getElementById('analyze').style.backgroundColor = 'lightgray';
     } catch (error) {
         console.error('Error:', error);
-        spinner.style.display = 'none';
         document.getElementById('predicted-age').classList.remove('skeleton');
         document.getElementById('recommended-products').classList.remove('skeleton');
         document.getElementById('recommended-treatments').classList.remove('skeleton');
@@ -227,6 +227,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+function resetButtons() {
+    document.getElementById('record').classList.remove('active');
+    document.getElementById('record').disabled = true;
+    document.getElementById('share').classList.remove('active');
+    document.getElementById('share').disabled = true;
+
+    document.getElementById('analyze').disabled = false;
+    document.getElementById('analyze').style.backgroundColor = 'black';
+}
 
 function showPopup() {
     alert('준비 중입니다');
