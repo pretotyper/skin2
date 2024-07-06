@@ -139,7 +139,7 @@ async function handleAnalyze() {
                 'Authorization': `Bearer ${OPENAI_API_KEY}`
             },
             body: JSON.stringify({
-                model: 'gpt-3.5-turbo', // 모델을 'gpt-3.5-turbo'로 변경
+                model: 'gpt-4o', // gpt 모델을 원하는 것으로 변경
                 messages: [
                     {
                         role: 'system',
