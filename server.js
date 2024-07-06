@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const fetch = require('node-fetch');
 const path = require('path');
+const bodyParser = require('body-parser');
 const app = express();
 
 const PORT = 3000;
@@ -12,13 +13,15 @@ if (!OPENAI_API_KEY) {
     process.exit(1);
 }
 
+// 요청 크기 제한을 50MB로 설정
+app.use(bodyParser.json({ limit: '50mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.post('/analyze', express.json(), async (req, res) => {
+app.post('/analyze', async (req, res) => {
     const { budget, images } = req.body;
 
     try {
@@ -29,7 +32,7 @@ app.post('/analyze', express.json(), async (req, res) => {
                 'Authorization': `Bearer ${OPENAI_API_KEY}`
             },
             body: JSON.stringify({
-                model: 'gpt-4',
+                model: 'gpt-4o',
                 messages: [
                     {
                         role: 'system',

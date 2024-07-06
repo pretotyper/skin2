@@ -18,6 +18,14 @@ document.getElementById('gnb-share-btn').addEventListener('click', sharePageLink
 
 function handleImageUpload(event) {
     const file = event.target.files[0];
+    const maxFileSizeMB = 10; // 10MB 이하로 제한
+
+    if (file.size > maxFileSizeMB * 1024 * 1024) {
+        alert(`파일 크기가 너무 큽니다. 최대 ${maxFileSizeMB}MB 이하로 업로드해주세요.`);
+        event.target.value = ''; // 파일 선택 취소
+        return;
+    }
+
     const fileName = file ? file.name : null;
 
     const imageFiles = [
@@ -132,6 +140,17 @@ async function handleAnalyze() {
     const image3 = document.getElementById('image3').files[0];
 
     try {
+        document.getElementById('predicted-age').innerText = '';
+        document.getElementById('recommended-products').innerText = '';
+        document.getElementById('recommended-treatments').innerText = '';
+
+        document.getElementById('predicted-age').classList.add('skeleton');
+        document.getElementById('recommended-products').classList.add('skeleton');
+        document.getElementById('recommended-treatments').classList.add('skeleton');
+
+        const spinner = document.getElementById('spinner');
+        spinner.style.display = 'inline-block';
+
         const image1Base64 = await getBase64(image1);
         const image2Base64 = await getBase64(image2);
         const image3Base64 = await getBase64(image3);
@@ -147,7 +166,8 @@ async function handleAnalyze() {
             })
         });
 
-        // 응답이 JSON 형식인지 확인
+        spinner.style.display = 'none';
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -167,6 +187,10 @@ async function handleAnalyze() {
         document.getElementById('recommended-products').innerText = productRoutineRecommendation;
         document.getElementById('recommended-treatments').innerText = treatmentRecommendation;
 
+        document.getElementById('predicted-age').classList.remove('skeleton');
+        document.getElementById('recommended-products').classList.remove('skeleton');
+        document.getElementById('recommended-treatments').classList.remove('skeleton');
+
         document.getElementById('predicted-age').style.color = "black";
         document.getElementById('recommended-products').style.color = "black";
         document.getElementById('recommended-treatments').style.color = "black";
@@ -180,6 +204,10 @@ async function handleAnalyze() {
         document.getElementById('analyze').style.backgroundColor = 'lightgray';
     } catch (error) {
         console.error('Error:', error);
+        spinner.style.display = 'none';
+        document.getElementById('predicted-age').classList.remove('skeleton');
+        document.getElementById('recommended-products').classList.remove('skeleton');
+        document.getElementById('recommended-treatments').classList.remove('skeleton');
         showToast('분석 중 오류가 발생했습니다. 다시 시도해 주세요.');
     }
 }
