@@ -20,7 +20,6 @@ function handleImageUpload(event) {
     const file = event.target.files[0];
     const fileName = file ? file.name : null;
 
-    // 중복 파일 체크
     const imageFiles = [
         document.getElementById('image1').files[0],
         document.getElementById('image2').files[0],
@@ -92,7 +91,7 @@ function comma(str) {
 function uncomma(str) {
     str = String(str);
     return str.replace(/[^\d]+/g, '');
-} 
+}
 
 function inputCurrencyFormat(obj) {
     let value = uncomma(obj.value.replace('₩', '').trim());
@@ -117,97 +116,68 @@ function onlynumber(str) {
     return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1');
 }
 
-// OpenAI API 호출 추가
+function getBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+}
+
 async function handleAnalyze() {
     const budget = document.getElementById('budget').value.trim();
     const image1 = document.getElementById('image1').files[0];
     const image2 = document.getElementById('image2').files[0];
     const image3 = document.getElementById('image3').files[0];
 
-    // API 요청을 위한 데이터 준비
-    const data = {
-        budget: budget,
-        images: [image1, image2, image3].map(image => URL.createObjectURL(image))
-    };
-
     try {
-        // OpenAI API 호출
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        const image1Base64 = await getBase64(image1);
+        const image2Base64 = await getBase64(image2);
+        const image3Base64 = await getBase64(image3);
+
+        const response = await fetch('/analyze', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${OPENAI_API_KEY}`
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                model: 'gpt-4o', // gpt 모델을 원하는 것으로 변경
-                messages: [
-                    {
-                        role: 'system',
-                        content: 'You are a skin care expert. Analyze the provided skin images and budget to recommend skin care products and treatments. Provide the results in Korean.'
-                    },
-                    {
-                        role: 'user',
-                        content: `분석을 위해 세 장의 얼굴 사진과 예산을 입력받았습니다. 
-                                예산: ${budget} 원.
-                                이미지 URL: ${data.images.join(', ')}.
-                                만약 사진 중 하나라도 얼굴 사진이 아니라면 "얼굴 사진이 아니면 정확한 분석이 어렵습니다. 본인의 얼굴 사진으로 다시 업로드해주세요."라는 메시지를 출력해주세요.
-                                분석 결과, 제품 및 루틴 추천, 피부 시술 추천 항목을 각각 구분하여 출력해주세요.`
-                    }
-                ],
-                max_tokens: 1000
+                budget: budget,
+                images: [image1Base64, image2Base64, image3Base64]
             })
         });
 
-        const result = await response.json();
-
-        // 응답 데이터 로깅
-        console.log(result);
-
-        // 응답 데이터가 올바르게 반환되었는지 확인
-        if (result && result.choices && result.choices[0] && result.choices[0].message) {
-            const content = result.choices[0].message.content;
-            
-            // 각 섹션을 구분하여 결과 표시
-            const diagnosisResult = content.match(/진단 결과[\s\S]*?(?=\n제품 및 루틴 추천)/);
-            const productRoutineRecommendation = content.match(/제품 및 루틴 추천[\s\S]*?(?=\n피부 시술 추천)/);
-            const treatmentRecommendation = content.match(/피부 시술 추천[\s\S]*$/);
-
-            if (diagnosisResult) {
-                document.getElementById('predicted-age').innerText = diagnosisResult[0].trim();
-            } else {
-                document.getElementById('predicted-age').innerText = "분석 결과를 불러오지 못했습니다. 다시 시도해주세요.";
-            }
-
-            if (productRoutineRecommendation) {
-                document.getElementById('recommended-products').innerText = productRoutineRecommendation[0].trim();
-            } else {
-                document.getElementById('recommended-products').innerText = "분석 결과를 불러오지 못했습니다. 다시 시도해주세요.";
-            }
-
-            if (treatmentRecommendation) {
-                document.getElementById('recommended-treatments').innerText = treatmentRecommendation[0].trim();
-            } else {
-                document.getElementById('recommended-treatments').innerText = "분석 결과를 불러오지 못했습니다. 다시 시도해주세요.";
-            }
-
-            // 진단 결과 및 추천 제품 섹션의 글씨 색상 변경
-            document.getElementById('predicted-age').style.color = "black";
-            document.getElementById('recommended-products').style.color = "black";
-            document.getElementById('recommended-treatments').style.color = "black";
-
-            // 회원가입하고 기록하기 및 공유하기 버튼 활성화
-            document.getElementById('record').classList.add('active');
-            document.getElementById('record').disabled = false;
-            document.getElementById('share').classList.add('active');
-            document.getElementById('share').disabled = false;
-
-            // '분석하기' 버튼 비활성화 및 색상 변경
-            document.getElementById('analyze').disabled = true;
-            document.getElementById('analyze').style.backgroundColor = 'lightgray';
-        } else {
-            showToast('분석 중 오류가 발생했습니다. 다시 시도해 주세요.');
-            console.error('Unexpected response format:', result);
+        // 응답이 JSON 형식인지 확인
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+
+        const result = await response.json();
+        console.log(result);  // API 응답을 콘솔에 출력
+
+        const diagnosisResultMatch = result.match(/진단 결과:([\s\S]*?)(?=제품 및 루틴 추천:|피부 시술 추천:|$)/);
+        const productRoutineRecommendationMatch = result.match(/제품 및 루틴 추천:([\s\S]*?)(?=피부 시술 추천:|$)/);
+        const treatmentRecommendationMatch = result.match(/피부 시술 추천:([\s\S]*?$)/);
+
+        const diagnosisResult = diagnosisResultMatch ? diagnosisResultMatch[1].trim() : "분석 결과를 불러오지 못했습니다. 다시 시도해주세요.";
+        const productRoutineRecommendation = productRoutineRecommendationMatch ? productRoutineRecommendationMatch[1].trim() : "분석 결과를 불러오지 못했습니다. 다시 시도해주세요.";
+        const treatmentRecommendation = treatmentRecommendationMatch ? treatmentRecommendationMatch[1].trim() : "분석 결과를 불러오지 못했습니다. 다시 시도해주세요.";
+
+        document.getElementById('predicted-age').innerText = diagnosisResult;
+        document.getElementById('recommended-products').innerText = productRoutineRecommendation;
+        document.getElementById('recommended-treatments').innerText = treatmentRecommendation;
+
+        document.getElementById('predicted-age').style.color = "black";
+        document.getElementById('recommended-products').style.color = "black";
+        document.getElementById('recommended-treatments').style.color = "black";
+
+        document.getElementById('record').classList.add('active');
+        document.getElementById('record').disabled = false;
+        document.getElementById('share').classList.add('active');
+        document.getElementById('share').disabled = false;
+
+        document.getElementById('analyze').disabled = true;
+        document.getElementById('analyze').style.backgroundColor = 'lightgray';
     } catch (error) {
         console.error('Error:', error);
         showToast('분석 중 오류가 발생했습니다. 다시 시도해 주세요.');
