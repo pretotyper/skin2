@@ -23,6 +23,9 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('record').addEventListener('click', showPopup);
     document.getElementById('share').addEventListener('click', shareResult);
     document.getElementById('gnb-share-btn').addEventListener('click', sharePageLink);
+    document.getElementById('gnb-refresh-btn').addEventListener('click', function() {
+        location.reload();
+    });
 });
 
 function handleImageUpload(event) {
@@ -150,6 +153,29 @@ function convertNewlinesToBreaks(text) {
     return text.replace(/\n/g, '<br>');
 }
 
+function addColorToKeywords(text) {
+    const keywords = [
+        '피부 특징', '피부 관리 제품 및 루틴 추천', '피부 시술 추천'
+    ];
+
+    keywords.forEach(keyword => {
+        const regex = new RegExp(keyword, 'g');
+        text = text.replace(regex, `<span style="color:#3333ff;">${keyword}</span>`);
+    });
+
+    return text;
+}
+
+function convertMarkdownToHTML(text) {
+    return text
+        .replace(/#### (.*?)(\n|$)/g, '<h4>$1</h4>')
+        .replace(/### (.*?)(\n|$)/g, '<h3>$1</h3>')
+        .replace(/## (.*?)(\n|$)/g, '<h2>$1</h2>')
+        .replace(/# (.*?)(\n|$)/g, '<h1>$1</h1>')
+        .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+        .replace(/\n/g, '<br>');
+}
+
 async function handleAnalyze() {
     const budget = document.getElementById('budget').value.trim();
     const image1 = document.getElementById('image1').files[0];
@@ -188,7 +214,8 @@ async function handleAnalyze() {
         spinner.style.display = 'none';
 
         // Convert Markdown-like text to HTML
-        const formattedResult = convertNewlinesToBreaks(convertToBold(result));
+        let formattedResult = convertMarkdownToHTML(result);
+        formattedResult = addColorToKeywords(formattedResult);
 
         document.getElementById('predicted-age').innerHTML = formattedResult;
 

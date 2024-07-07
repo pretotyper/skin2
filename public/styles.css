@@ -19,7 +19,7 @@ body {
     display: flex;
     align-items: center;
 }
-.share-btn {
+.share-btn, .refresh-btn {
     background: none;
     border: none;
     font-size: 1em;
