@@ -102,6 +102,23 @@ h2 {
     text-align: left;
     width: 100%;
 }
+.keyword-highlight {
+    color: #3333ff;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-top: 20px;
+}
+
+.keyword-section {
+    margin-bottom: 20px;
+}
+
+.predicted-age-content {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
 .budget-input {
     display: flex;
     flex-direction: column;

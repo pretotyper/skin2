@@ -145,12 +145,8 @@ function getBase64(file) {
     });
 }
 
-function convertToBold(text) {
-    return text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
-}
-
-function convertNewlinesToBreaks(text) {
-    return text.replace(/\n/g, '<br>');
+function removeBold(text) {
+    return text.replace(/\*\*(.*?)\*\*/g, '$1');
 }
 
 function addColorToKeywords(text) {
@@ -160,7 +156,7 @@ function addColorToKeywords(text) {
 
     keywords.forEach(keyword => {
         const regex = new RegExp(keyword, 'g');
-        text = text.replace(regex, `<span style="color:#3333ff;">${keyword}</span>`);
+        text = text.replace(regex, `<span class="keyword-highlight">${keyword}</span>`);
     });
 
     return text;
@@ -168,11 +164,11 @@ function addColorToKeywords(text) {
 
 function convertMarkdownToHTML(text) {
     return text
+        .replace(/## (피부 특징|피부 관리 제품 및 루틴 추천|피부 시술 추천)(\n|$)/g, '<h4 class="keyword-highlight">$1</h4>')
         .replace(/#### (.*?)(\n|$)/g, '<h4>$1</h4>')
         .replace(/### (.*?)(\n|$)/g, '<h3>$1</h3>')
         .replace(/## (.*?)(\n|$)/g, '<h2>$1</h2>')
         .replace(/# (.*?)(\n|$)/g, '<h1>$1</h1>')
-        .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
         .replace(/\n/g, '<br>');
 }
 
@@ -213,11 +209,13 @@ async function handleAnalyze() {
 
         spinner.style.display = 'none';
 
-        // Convert Markdown-like text to HTML
-        let formattedResult = convertMarkdownToHTML(result);
+        // Remove bold markers and convert to HTML
+        let formattedResult = removeBold(result);
+        formattedResult = convertMarkdownToHTML(formattedResult);
         formattedResult = addColorToKeywords(formattedResult);
 
         document.getElementById('predicted-age').innerHTML = formattedResult;
+        document.getElementById('predicted-age').classList.add('predicted-age-content');
 
         document.getElementById('predicted-age').classList.remove('skeleton');
         document.getElementById('predicted-age').style.color = "black";
@@ -256,7 +254,7 @@ function showPopup() {
 
 function shareResult() {
     const predictedAge = document.getElementById('predicted-age').innerText;
-    const shareText = `진단 결과:\n${predictedAge}\n\n친구의 피부 연령대가 궁금하다면? "https://yourdomain.com"을 전해보세요!`;
+    const shareText = `분석 결과:\n${predictedAge}\n\n친구의 피부 연령대가 궁금하다면? "https://yourdomain.com"을 전해보세요!`;
     
     navigator.clipboard.writeText(shareText).then(function() {
         showToast('분석 결과가 복사되었습니다.');
