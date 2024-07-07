@@ -1,21 +1,32 @@
-document.getElementById('image1').addEventListener('change', handleImageUpload);
-document.getElementById('image2').addEventListener('change', handleImageUpload);
-document.getElementById('image3').addEventListener('change', handleImageUpload);
-document.getElementById('budget').addEventListener('input', handleBudgetInput);
-document.getElementById('budget').addEventListener('blur', function() {
-    addCurrencySymbol(this);
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('record').disabled = true;
+    document.getElementById('share').disabled = true;
+
+    ['image1', 'image2', 'image3'].forEach(id => {
+        document.getElementById(id).addEventListener('change', handleImageUpload);
+    });
+
+    document.getElementById('budget').addEventListener('input', handleBudgetInput);
+    document.getElementById('budget').addEventListener('blur', function() {
+        addCurrencySymbol(this);
+    });
+
+    document.getElementById('analyze').addEventListener('click', function() {
+        if (this.disabled) {
+            showToast('먼저 이미지 업로드 및 예산을 입력해주세요');
+        } else {
+            resetButtons();
+            handleAnalyze();
+        }
+    });
+
+    document.getElementById('record').addEventListener('click', showPopup);
+    document.getElementById('share').addEventListener('click', shareResult);
+    document.getElementById('gnb-share-btn').addEventListener('click', sharePageLink);
+    document.getElementById('gnb-refresh-btn').addEventListener('click', function() {
+        location.reload();
+    });
 });
-document.getElementById('analyze').addEventListener('click', function() {
-    if (this.disabled) {
-        showToast('먼저 이미지 업로드 및 예산을 입력해주세요');
-    } else {
-        resetButtons(); // 분석하기 버튼을 클릭했을 때 버튼 상태 초기화
-        handleAnalyze();
-    }
-});
-document.getElementById('record').addEventListener('click', showPopup);
-document.getElementById('share').addEventListener('click', shareResult);
-document.getElementById('gnb-share-btn').addEventListener('click', sharePageLink);
 
 function handleImageUpload(event) {
     const file = event.target.files[0];
@@ -134,6 +145,14 @@ function getBase64(file) {
     });
 }
 
+function convertToBold(text) {
+    return text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+}
+
+function convertNewlinesToBreaks(text) {
+    return text.replace(/\n/g, '<br>');
+}
+
 async function handleAnalyze() {
     const budget = document.getElementById('budget').value.trim();
     const image1 = document.getElementById('image1').files[0];
@@ -141,9 +160,9 @@ async function handleAnalyze() {
     const image3 = document.getElementById('image3').files[0];
 
     try {
-        document.getElementById('predicted-age').innerText = '';
-        document.getElementById('recommended-products').innerText = '';
-        document.getElementById('recommended-treatments').innerText = '';
+        document.getElementById('predicted-age').innerHTML = '';
+        document.getElementById('recommended-products').innerHTML = '';
+        document.getElementById('recommended-treatments').innerHTML = '';
 
         document.getElementById('predicted-age').classList.add('skeleton');
         document.getElementById('recommended-products').classList.add('skeleton');
@@ -176,17 +195,17 @@ async function handleAnalyze() {
 
         spinner.style.display = 'none';
 
-        const diagnosisResultMatch = result.match(/진단 결과:[\s\S]*?(?=\n\n|제품 및 루틴 추천:|$)/);
-        const productRoutineRecommendationMatch = result.match(/제품 및 루틴 추천:[\s\S]*?(?=\n\n|피부 시술 추천:|$)/);
-        const treatmentRecommendationMatch = result.match(/피부 시술 추천:[\s\S]*$/);
+        let diagnosisResult = convertToBold(result.diagnosisResult);
+        let productRoutineRecommendation = convertToBold(result.productRoutineRecommendation);
+        let treatmentRecommendation = convertToBold(result.treatmentRecommendation);
 
-        const diagnosisResult = diagnosisResultMatch ? diagnosisResultMatch[0].replace('진단 결과:', '').trim() : "분석 결과를 불러오지 못했습니다. 다시 시도해주세요.";
-        const productRoutineRecommendation = productRoutineRecommendationMatch ? productRoutineRecommendationMatch[0].replace('제품 및 루틴 추천:', '').trim() : "분석 결과를 불러오지 못했습니다. 다시 시도해주세요.";
-        const treatmentRecommendation = treatmentRecommendationMatch ? treatmentRecommendationMatch[0].replace('피부 시술 추천:', '').trim() : "분석 결과를 불러오지 못했습니다. 다시 시도해주세요.";
+        diagnosisResult = convertNewlinesToBreaks(diagnosisResult);
+        productRoutineRecommendation = convertNewlinesToBreaks(productRoutineRecommendation);
+        treatmentRecommendation = convertNewlinesToBreaks(treatmentRecommendation);
 
-        document.getElementById('predicted-age').innerText = diagnosisResult;
-        document.getElementById('recommended-products').innerText = productRoutineRecommendation;
-        document.getElementById('recommended-treatments').innerText = treatmentRecommendation;
+        document.getElementById('predicted-age').innerHTML = diagnosisResult;
+        document.getElementById('recommended-products').innerHTML = productRoutineRecommendation;
+        document.getElementById('recommended-treatments').innerHTML = treatmentRecommendation;
 
         document.getElementById('predicted-age').classList.remove('skeleton');
         document.getElementById('recommended-products').classList.remove('skeleton');
@@ -205,28 +224,18 @@ async function handleAnalyze() {
         document.getElementById('analyze').style.backgroundColor = 'lightgray';
     } catch (error) {
         console.error('Error:', error);
+        const errorMessage = '분석 결과를 불러오지 못했습니다. 다시 시도해주세요.';
+        document.getElementById('predicted-age').innerHTML = errorMessage;
+        document.getElementById('recommended-products').innerHTML = errorMessage;
+        document.getElementById('recommended-treatments').innerHTML = errorMessage;
+
         document.getElementById('predicted-age').classList.remove('skeleton');
         document.getElementById('recommended-products').classList.remove('skeleton');
         document.getElementById('recommended-treatments').classList.remove('skeleton');
-        showToast('분석 중 오류가 발생했습니다. 다시 시도해 주세요.');
+
+        showToast(errorMessage);
     }
 }
-
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('record').disabled = true;
-    document.getElementById('share').disabled = true;
-
-    document.getElementById('record').addEventListener('click', function(event) {
-        if (this.disabled) {
-            event.preventDefault();
-        }
-    });
-    document.getElementById('share').addEventListener('click', function(event) {
-        if (this.disabled) {
-            event.preventDefault();
-        }
-    });
-});
 
 function resetButtons() {
     document.getElementById('record').classList.remove('active');
