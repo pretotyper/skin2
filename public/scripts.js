@@ -23,9 +23,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('record').addEventListener('click', showPopup);
     document.getElementById('share').addEventListener('click', shareResult);
     document.getElementById('gnb-share-btn').addEventListener('click', sharePageLink);
-    document.getElementById('gnb-refresh-btn').addEventListener('click', function() {
-        location.reload();
-    });
 });
 
 function handleImageUpload(event) {
@@ -161,12 +158,7 @@ async function handleAnalyze() {
 
     try {
         document.getElementById('predicted-age').innerHTML = '';
-        document.getElementById('recommended-products').innerHTML = '';
-        document.getElementById('recommended-treatments').innerHTML = '';
-
         document.getElementById('predicted-age').classList.add('skeleton');
-        document.getElementById('recommended-products').classList.add('skeleton');
-        document.getElementById('recommended-treatments').classList.add('skeleton');
 
         const spinner = document.getElementById('spinner');
         spinner.style.display = 'inline-block';
@@ -195,25 +187,13 @@ async function handleAnalyze() {
 
         spinner.style.display = 'none';
 
-        let diagnosisResult = convertToBold(result.diagnosisResult);
-        let productRoutineRecommendation = convertToBold(result.productRoutineRecommendation);
-        let treatmentRecommendation = convertToBold(result.treatmentRecommendation);
+        // Convert Markdown-like text to HTML
+        const formattedResult = convertNewlinesToBreaks(convertToBold(result));
 
-        diagnosisResult = convertNewlinesToBreaks(diagnosisResult);
-        productRoutineRecommendation = convertNewlinesToBreaks(productRoutineRecommendation);
-        treatmentRecommendation = convertNewlinesToBreaks(treatmentRecommendation);
-
-        document.getElementById('predicted-age').innerHTML = diagnosisResult;
-        document.getElementById('recommended-products').innerHTML = productRoutineRecommendation;
-        document.getElementById('recommended-treatments').innerHTML = treatmentRecommendation;
+        document.getElementById('predicted-age').innerHTML = formattedResult;
 
         document.getElementById('predicted-age').classList.remove('skeleton');
-        document.getElementById('recommended-products').classList.remove('skeleton');
-        document.getElementById('recommended-treatments').classList.remove('skeleton');
-
         document.getElementById('predicted-age').style.color = "black";
-        document.getElementById('recommended-products').style.color = "black";
-        document.getElementById('recommended-treatments').style.color = "black";
 
         document.getElementById('record').classList.add('active');
         document.getElementById('record').disabled = false;
@@ -226,12 +206,8 @@ async function handleAnalyze() {
         console.error('Error:', error);
         const errorMessage = '분석 결과를 불러오지 못했습니다. 다시 시도해주세요.';
         document.getElementById('predicted-age').innerHTML = errorMessage;
-        document.getElementById('recommended-products').innerHTML = errorMessage;
-        document.getElementById('recommended-treatments').innerHTML = errorMessage;
 
         document.getElementById('predicted-age').classList.remove('skeleton');
-        document.getElementById('recommended-products').classList.remove('skeleton');
-        document.getElementById('recommended-treatments').classList.remove('skeleton');
 
         showToast(errorMessage);
     }
@@ -253,9 +229,7 @@ function showPopup() {
 
 function shareResult() {
     const predictedAge = document.getElementById('predicted-age').innerText;
-    const recommendedProducts = document.getElementById('recommended-products').innerText;
-    const recommendedTreatments = document.getElementById('recommended-treatments').innerText;
-    const shareText = `진단 결과:\n${predictedAge}\n\n제품 추천:\n${recommendedProducts}\n\n피부 시술 추천:\n${recommendedTreatments}\n\n친구의 피부 연령대가 궁금하다면? "https://yourdomain.com"을 전해보세요!`;
+    const shareText = `진단 결과:\n${predictedAge}\n\n친구의 피부 연령대가 궁금하다면? "https://yourdomain.com"을 전해보세요!`;
     
     navigator.clipboard.writeText(shareText).then(function() {
         showToast('분석 결과가 복사되었습니다.');
