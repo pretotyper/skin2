@@ -254,7 +254,8 @@ function showPopup() {
 
 function shareResult() {
     const predictedAge = document.getElementById('predicted-age').innerText;
-    const shareText = `분석 결과:\n${predictedAge}\n\n친구의 피부 연령대가 궁금하다면? "https://yourdomain.com"을 전해보세요!`;
+    let pageURL = location.href;
+    const shareText = `분석 결과:\n${predictedAge}\n\n친구의 피부 연령대가 궁금하다면? ${pageURL}을 전해보세요!`;
     
     navigator.clipboard.writeText(shareText).then(function() {
         showToast('분석 결과가 복사되었습니다.');
@@ -264,7 +265,7 @@ function shareResult() {
 }
 
 function sharePageLink() {
-    const pageURL = "https://yourdomain.com";
+    let pageURL = location.href;
     
     navigator.clipboard.writeText(pageURL).then(function() {
         showToast('링크가 복사되었습니다.');
