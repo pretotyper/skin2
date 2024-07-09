@@ -172,6 +172,10 @@ function convertMarkdownToHTML(text) {
         .replace(/\n/g, '<br>');
 }
 
+function removeLinks(text) {
+    return text.replace(/\(https:\/\/www\.coupang\.com\)/g, '');
+}
+
 async function handleAnalyze() {
     const budget = document.getElementById('budget').value.trim();
     const image1 = document.getElementById('image1').files[0];
@@ -209,8 +213,9 @@ async function handleAnalyze() {
 
         spinner.style.display = 'none';
 
-        // Remove bold markers and convert to HTML
+        // Remove bold markers, links, and convert to HTML
         let formattedResult = removeBold(result);
+        formattedResult = removeLinks(formattedResult);
         formattedResult = convertMarkdownToHTML(formattedResult);
         formattedResult = addColorToKeywords(formattedResult);
 
