@@ -172,8 +172,8 @@ function convertMarkdownToHTML(text) {
         .replace(/\n/g, '<br>');
 }
 
-function removeLinks(text) {
-    return text.replace(/\(https:\/\/www\.coupang\.com\)/g, '');
+function removeLinkSentences(text) {
+    return text.replace(/.*\bwww\.coupang\.com\S*.*(\n|$)/g, '');
 }
 
 async function handleAnalyze() {
@@ -215,7 +215,7 @@ async function handleAnalyze() {
 
         // Remove bold markers, links, and convert to HTML
         let formattedResult = removeBold(result);
-        formattedResult = removeLinks(formattedResult);
+        formattedResult = removeLinkSentences(formattedResult);
         formattedResult = convertMarkdownToHTML(formattedResult);
         formattedResult = addColorToKeywords(formattedResult);
 
@@ -260,7 +260,7 @@ function showPopup() {
 function shareResult() {
     const predictedAge = document.getElementById('predicted-age').innerText;
     let pageURL = location.href;
-    const shareText = `분석 결과:\n${predictedAge}\n\n친구의 피부 연령대가 궁금하다면? ${pageURL}을 전해보세요!`;
+    const shareText = `[분석 결과]\n\n${predictedAge}\n\n친구의 피부 연령대가 궁금하다면? ${pageURL}을 전해보세요!`;
     
     navigator.clipboard.writeText(shareText).then(function() {
         showToast('분석 결과가 복사되었습니다.');
