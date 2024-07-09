@@ -10,7 +10,7 @@ app.use((req, res, next) => {
     next();
   });
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 if (!OPENAI_API_KEY) {
