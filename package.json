@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "main": "scripts.js",
   "scripts": {
-    "build": "npm run build & node server",
     "start": "node server.js"
   },
   "dependencies": {
