@@ -1,20 +1,14 @@
-require('dotenv').config();
 const express = require('express');
 const fetch = require('node-fetch');
 const path = require('path');
 const bodyParser = require('body-parser');
 const app = express();
 
-app.use((req, res, next) => {
-    res.setHeader('ngrok-skip-browser-warning', 'true');
-    next();
-  });
-
 const PORT = process.env.PORT || 3000;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 if (!OPENAI_API_KEY) {
-    console.error('API key is missing. Please check your .env file.');
+    console.error('API key is missing. Please check your environment variables.');
     process.exit(1);
 }
 
@@ -27,6 +21,9 @@ app.get('/', (req, res) => {
 
 app.post('/analyze', async (req, res) => {
     const { budget, images } = req.body;
+    console.log('Received request on /analyze');
+    console.log('Budget:', budget);
+    console.log('Images:', images);
 
     try {
         const imageUrls = images.map((image, index) => ({
