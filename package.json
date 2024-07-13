@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "scripts.js",
   "scripts": {
-    "start": "node server.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "abort-controller": "^3.0.0",
@@ -88,9 +88,6 @@
     "web-streams-polyfill": "^3.3.3",
     "webidl-conversions": "^3.0.1",
     "whatwg-url": "^5.0.0"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
