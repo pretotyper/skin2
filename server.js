@@ -4,6 +4,9 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const app = express();
 
+// dotenv 패키지를 사용하여 .env 파일의 환경 변수를 로드합니다.
+require('dotenv').config();
+
 const PORT = process.env.PORT || 3000;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 

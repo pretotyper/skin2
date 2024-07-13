@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "scripts.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "npm run build & node server",
+    "start": "npm start"
   },
   "dependencies": {
     "abort-controller": "^3.0.0",
