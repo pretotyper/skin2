@@ -40,16 +40,16 @@ function handleImageUpload(event) {
 
     const fileName = file ? file.name : null;
 
-    // 이미지 파일 선택 중복 확인 대신 고유 값을 이용하여 중복 확인 방지
-    const filePaths = [
-        document.getElementById('image1').value,
-        document.getElementById('image2').value,
-        document.getElementById('image3').value
+    const imageFiles = [
+        document.getElementById('image1').files[0],
+        document.getElementById('image2').files[0],
+        document.getElementById('image3').files[0]
     ];
 
-    const filePathCount = filePaths.filter(path => path === event.target.value).length;
+    const fileNames = imageFiles.map(file => file ? file.name : null);
+    const fileCount = fileNames.filter(name => name === fileName).length;
 
-    if (filePathCount > 1) {
+    if (fileCount > 1) {
         alert('중복된 파일은 등록할 수 없습니다');
         event.target.value = ''; // 파일 선택 취소
         return;
@@ -167,22 +167,21 @@ function convertMarkdownToHTML(text) {
         .replace(/## (피부 특징|피부 관리 제품 및 루틴 추천|피부 시술 추천)(\n|$)/g, '<h4 class="keyword-highlight">$1</h4>')
         .replace(/#### (.*?)(\n|$)/g, '<h4>$1</h4>')
         .replace(/### (.*?)(\n|$)/g, '<h3>$1</h3>')
-        .replace(/## (.*?)(\n|$)/g, '<h2>$1</2>')
+        .replace(/## (.*?)(\n|$)/g, '<h2>$1</h2>')
         .replace(/# (.*?)(\n|$)/g, '<h1>$1</h1>')
         .replace(/\n/g, '<br>');
 }
 
-function removeLinkSentences(text) {
-    return text.replace(/.*\bwww\.coupang\.com\S*.*(\n|$)/g, '');
-}
-
 function replaceDuplicateSkinFeatures(text) {
-    const regex = /(피부 특징)/g;
-    const matches = [...text.matchAll(regex)];
-    if (matches.length > 1) {
-        return text.replace(regex, (match, offset, string) => string.indexOf(match) === offset ? match : '특징');
+    if (typeof text === 'string') {
+        return text.replace(/피부 특징/g, (match, offset, string) => {
+            if (string.indexOf(match) !== offset) {
+                return '특징';
+            }
+            return match;
+        });
     }
-    return text;
+    return text; // 문자열이 아닌 경우 원래 값 반환
 }
 
 async function handleAnalyze() {
@@ -217,15 +216,14 @@ async function handleAnalyze() {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        let result = await response.json();
+        const result = await response.json();
         console.log(result);  // API 응답을 콘솔에 출력
 
         spinner.style.display = 'none';
 
-        // Remove bold markers, links, and replace duplicate skin features, then convert to HTML
+        // Remove bold markers and convert to HTML
         let formattedResult = removeBold(result);
-        formattedResult = removeLinkSentences(formattedResult);
-        formattedResult = replaceDuplicateSkinFeatures(formattedResult);
+        formattedResult = replaceDuplicateSkinFeatures(formattedResult); // 중복된 '피부 특징' 텍스트를 '특징'으로 변경
         formattedResult = convertMarkdownToHTML(formattedResult);
         formattedResult = addColorToKeywords(formattedResult);
 
