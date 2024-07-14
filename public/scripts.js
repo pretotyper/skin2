@@ -2,8 +2,12 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('record').disabled = true;
     document.getElementById('share').disabled = true;
 
+    const uploadedFiles = [];
+
     ['image1', 'image2', 'image3'].forEach(id => {
-        document.getElementById(id).addEventListener('change', handleImageUpload);
+        document.getElementById(id).addEventListener('change', function(event) {
+            handleImageUpload(event, uploadedFiles);
+        });
     });
 
     document.getElementById('budget').addEventListener('input', handleBudgetInput);
@@ -28,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-function handleImageUpload(event) {
+function handleImageUpload(event, uploadedFiles) {
     const file = event.target.files[0];
     const maxFileSizeMB = 10; // 10MB 이하로 제한
 
@@ -38,22 +42,18 @@ function handleImageUpload(event) {
         return;
     }
 
-    const fileName = file ? file.name : null;
+    // 파일 이름이 "image.jpg"인 경우 중복 체크를 생략
+    if (file.name !== 'image.jpg') {
+        const fileAlreadyUploaded = uploadedFiles.some(uploadedFile => uploadedFile.name === file.name && uploadedFile.lastModified === file.lastModified && uploadedFile.size === file.size);
 
-    const imageFiles = [
-        document.getElementById('image1').files[0],
-        document.getElementById('image2').files[0],
-        document.getElementById('image3').files[0]
-    ];
-
-    const fileNames = imageFiles.map(file => file ? file.name : null);
-    const fileCount = fileNames.filter(name => name === fileName).length;
-
-    if (fileCount > 1) {
-        alert('중복된 파일은 등록할 수 없습니다');
-        event.target.value = ''; // 파일 선택 취소
-        return;
+        if (fileAlreadyUploaded) {
+            alert('중복된 파일은 등록할 수 없습니다');
+            event.target.value = ''; // 파일 선택 취소
+            return;
+        }
     }
+
+    uploadedFiles.push(file);
 
     const previewId = "preview" + event.target.id.charAt(event.target.id.length - 1);
     const preview = document.getElementById(previewId);
