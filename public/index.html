@@ -3,7 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>피부 진단 서비스</title>
+    <title>무료 AI 피부 분석 서비스</title> <!-- website 주소 타이틀 -->
+
+     <!-- Open Graph Meta Tags -->
+     <meta property="og:title" content="무료 AI 피부 분석 서비스">
+     <meta property="og:description" content="단 30초면 됩니다. 가입 없이 사진 3장만으로 피부 분석을 무료로 받아보세요.">
+     <meta property="og:image" content="https://pretotyper.xyz/og-image.jpg"> <!-- 이미지 URL -->
+     <meta property="og:url" content="https://pretotyper.xyz"> <!-- 페이지 URL -->
+     <meta property="og:type" content="website">
+     
+     <!-- Twitter Card Meta Tags (Optional) -->
+     <meta name="twitter:card" content="summary_large_image">
+     <meta name="twitter:title" content="무료 AI 피부 분석 서비스">
+     <meta name="twitter:description" content="단 30초면 됩니다. 가입 없이 사진 3장만으로 피부 분석을 무료로 받아보세요.">
+     <meta name="twitter:image" content="https://pretotyper.xyz/og-image.jpg"> <!-- 이미지 URL -->
+
+
     <link rel="stylesheet" href="styles.css">
     <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
@@ -27,15 +42,15 @@
 <body>
     <header class="gnb">
         <div class="logo">
-            <h2>skin2</h2>
+            <h2>skin2</h2> <!-- 로고 영역, 대신 텍스트로 브랜드 이름 작성하는 영역 -->
         </div>
         <div class="gnb-right">
-            <button class="refresh-btn" id="gnb-refresh-btn">새로고침</button>
-            <button class="share-btn" id="gnb-share-btn">공유</button>
+            <button class="refresh-btn" id="gnb-refresh-btn">새로고침</button> <!-- GNB 우상단 CTA 영역 -->
+            <button class="share-btn" id="gnb-share-btn">공유</button> <!-- GNB 우상단 CTA 영역 -->
         </div>
     </header>
     <div class="container">
-        <h1>무료 AI 피부 분석 서비스</h1>
+        <h1>무료 AI 피부 분석 서비스</h1> <!-- 타이틀 텍스트 영역 -->
         <h2>본인의 얼굴 사진을 업로드해 주세요.<span class="red-asterisk">*</span></h2>
         <div class="description">
             정면, 왼쪽, 오른쪽 얼굴이 잘 보이는 최소 3장의 사진을 업로드해야 정확한 분석이 가능합니다. 이미지는 기록되지 않고 초기화되어 누구도 볼 수 없으니 안심하셔도 됩니다.
@@ -64,21 +79,21 @@
         <div class="budget-input">
             <input type="text" id="budget" maxlength="10" onkeyup="inputCurrencyFormat(this);" placeholder="예) 50000, 200000" />
         </div>
-        <div class="analyze-button">
-            <button id="analyze" disabled>분석하기 <div id="spinner" class="spinner" style="display: none;"></div></button>
+        <div class="analyze-button"> <!-- 메인 CTA 영역 -->
+            <button id="analyze" disabled>분석하기 <div id="spinner" class="spinner" style="display: none;"></div></button> 
         </div>
         <div class="result">
-            <div class="result-title">분석 결과</div>
-            <div id="predicted-age">이곳에 결과가 나옵니다.</div>
+            <div class="result-title">분석 결과</div> <!-- 액션 결과 영역 -->
+            <div id="predicted-age">이곳에 결과가 나옵니다.</div> 
         </div>
         <div class="actions">
-            <button class="record-button" id="record" disabled>가입하고 기록하기</button>
-            <button class="share-button" id="share" disabled>공유하기</button>
+            <button class="record-button" id="record" disabled>가입하고 기록하기</button> <!-- CTA 영역 -->
+            <button class="share-button" id="share" disabled>공유하기</button> <!-- CTA 영역 -->
         </div>
     </div>
     
     <footer>
-        <p class="catch-phrase"> Discover Your Perfect Skin with Free AI.</p>
+        <p class="catch-phrase"> Discover Your Perfect Skin with Free AI.</p> <!-- 캐치 프레이즈 영역 -->
     </footer>
 
     <div id="toast" class="toast"></div>

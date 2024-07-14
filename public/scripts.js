@@ -289,7 +289,7 @@ function sharePageLink() {
 
 function showToast(message) {
     const toast = document.getElementById("toast");
-    toast.innerText = message;
+    toast.innerText = message
     toast.className = "toast show";
     setTimeout(function() {
         toast.className = toast.className.replace("show", ""); 
